@@ -60,8 +60,8 @@ all: main-build
 main-build: EXTI.elf secondary-outputs
 
 # Tool invocations
-EXTI.elf EXTI.map: $(OBJS) $(USER_OBJS) C:\Users\hasan\Desktop\wifi\EXTI\STM32G030C8TX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "EXTI.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m0plus -T"C:\Users\hasan\Desktop\wifi\EXTI\STM32G030C8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="EXTI.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+EXTI.elf EXTI.map: $(OBJS) $(USER_OBJS) C:\Users\hasan\Desktop\wifi2\EXTI\STM32G030C8TX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "EXTI.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m0plus -T"C:\Users\hasan\Desktop\wifi2\EXTI\STM32G030C8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="EXTI.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -u _printf_float -u _scanf_float -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

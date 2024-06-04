@@ -24,11 +24,24 @@
 #include "ssd1306.h"
 #include "stdio.h"
 #include "string.h"
+#include "math.h"
 #include "ssd1306_tests.h"
+
+double termistor(uint32_t analogValue)
+{
+	double temperature;
+	uint32_t adcval = 4096-analogValue;
+	temperature = log((adcval*10000)/(4095-adcval));
+	temperature = 1 / (0.001129148 + (0.000234125 + (0.0000000876741 * temperature * temperature)) * temperature);
+	temperature = temperature - 273.15;
+	return temperature;
+
+}
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
+double temp1;
 
 /* USER CODE END PTD */
 
@@ -43,6 +56,8 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+ADC_HandleTypeDef hadc1;
+
 I2C_HandleTypeDef hi2c1;
 
 UART_HandleTypeDef huart1;
@@ -56,15 +71,18 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_I2C1_Init(void);
 static void MX_USART1_UART_Init(void);
+static void MX_ADC1_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+char buffer[10];
 uint16_t sayi = 0;
 uint16_t sayi2 = 0;
 char data[80];
+uint8_t ikilivalu[3];
 char ale = 1;
 uint8_t school_data[10] ="123456789";
 uint8_t Rx_data[4];
@@ -141,13 +159,16 @@ int main(void)
   MX_GPIO_Init();
   MX_I2C1_Init();
   MX_USART1_UART_Init();
+  MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
 	ssd1306_Init();
-
+	ssd1306_Fill(Black);
 	HAL_Delay(200);
 	ssd1306_SetCursor(5, 2);
 	ssd1306_WriteString("Wi-Fi", Font_7x10, White);
 	ssd1306_UpdateScreen();
+	  volatile uint32_t adcValues[10];
+	  HAL_ADC_Start(&hadc1);
 
   /* USER CODE END 2 */
 
@@ -158,16 +179,7 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 		school_data[9]=0x0a;
-		HAL_UART_Transmit(&huart1, school_data, 10, 200);
-		HAL_Delay(2000);
 
-		sprintf(data, "Giden %c%c%c%c%c%c%c%c%c", school_data[0],school_data[1], school_data[2],school_data[3], school_data[4],school_data[5], school_data[6],school_data[7],school_data[8]);
-
-		ssd1306_Fill(Black);
-		ssd1306_SetCursor(0, 20);
-		ssd1306_WriteString(data, Font_11x18, White);
-		ssd1306_UpdateScreen();
-		HAL_Delay(20);
 		if(Rx_data[0]=='A'&&Rx_data[1]=='1')
 		{
 			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, SET);
@@ -178,6 +190,32 @@ int main(void)
 			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, RESET);
 
 		}
+
+		  HAL_ADC_PollForConversion(&hadc1, 50);
+		  adcValues[2] = HAL_ADC_GetValue(&hadc1);
+		  temp1 = (termistor(adcValues[2]) - 10);
+		  snprintf(buffer, 10, "%f", temp1);
+			ssd1306_SetCursor(5, 2);
+			ssd1306_WriteString("SICAKLIK", Font_11x18, White);
+			ssd1306_SetCursor(14, 27);
+			ssd1306_WriteString(data, Font_11x18, White);
+			ssd1306_SetCursor(45, 46);
+			ssd1306_UpdateScreen();
+
+			ikilivalu[0]=buffer[0];ikilivalu[1]=buffer[1];ikilivalu[2]=0x0A;
+			sprintf(data, "Giden %c%c", buffer[0],buffer[1]);
+			HAL_UART_Transmit(&huart1, ikilivalu, 10, 200);
+			HAL_Delay(200);
+
+
+	if(temp1 > 23)
+	{
+	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, 1);
+	}
+	else
+	{
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, 0);
+	}
 
 	}
   /* USER CODE END 3 */
@@ -226,6 +264,64 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+}
+
+/**
+  * @brief ADC1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_ADC1_Init(void)
+{
+
+  /* USER CODE BEGIN ADC1_Init 0 */
+
+  /* USER CODE END ADC1_Init 0 */
+
+  ADC_ChannelConfTypeDef sConfig = {0};
+
+  /* USER CODE BEGIN ADC1_Init 1 */
+
+  /* USER CODE END ADC1_Init 1 */
+
+  /** Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion)
+  */
+  hadc1.Instance = ADC1;
+  hadc1.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV2;
+  hadc1.Init.Resolution = ADC_RESOLUTION_12B;
+  hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+  hadc1.Init.ScanConvMode = ADC_SCAN_DISABLE;
+  hadc1.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
+  hadc1.Init.LowPowerAutoWait = DISABLE;
+  hadc1.Init.LowPowerAutoPowerOff = DISABLE;
+  hadc1.Init.ContinuousConvMode = ENABLE;
+  hadc1.Init.NbrOfConversion = 1;
+  hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
+  hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
+  hadc1.Init.DMAContinuousRequests = DISABLE;
+  hadc1.Init.Overrun = ADC_OVR_DATA_PRESERVED;
+  hadc1.Init.SamplingTimeCommon1 = ADC_SAMPLETIME_1CYCLE_5;
+  hadc1.Init.SamplingTimeCommon2 = ADC_SAMPLETIME_1CYCLE_5;
+  hadc1.Init.OversamplingMode = DISABLE;
+  hadc1.Init.TriggerFrequencyMode = ADC_TRIGGER_FREQ_HIGH;
+  if (HAL_ADC_Init(&hadc1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Regular Channel
+  */
+  sConfig.Channel = ADC_CHANNEL_4;
+  sConfig.Rank = ADC_REGULAR_RANK_1;
+  sConfig.SamplingTime = ADC_SAMPLINGTIME_COMMON_1;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN ADC1_Init 2 */
+
+  /* USER CODE END ADC1_Init 2 */
+
 }
 
 /**
