@@ -27,10 +27,10 @@ Demedukit eğitim kiti için yazılan kodları burada depoladım. ESP32 ve STM32
 
 ------------
 
- **Eğer STM32'ye kod atacaksanız micro-USB Debugger portundan bağlanıp pin bağlantılarını aşağıdaki resme göre yapmalısınız. zaman zaman debuggeri güncellemeniz gerekebilir. bu durumda da 6 pini de boşta bırakmalısınız**
+ **Eğer STM32'ye kod atacaksanız Debugger portundan bağlanıp pin bağlantılarını aşağıdaki resme göre yapmalısınız. zaman zaman debuggeri güncellemeniz gerekebilir. bu durumda da 6 pini de boşta bırakmalısınız**
 ![1](https://github.com/spacemonochrome/demedukit_kod_arsiv/assets/52783312/a9de8186-686e-4be7-b273-a7377557b9a6)
 
 ------------
 
- **Eğer ESP32 Debug yapacaksanız micro-USB portundan USB-Port'a bağlanıp pin bağlantılarını aşağıdaki resme göre yapmalısınız.**
+ **Eğer ESP32 Debug yapacaksanız USB-Port'a bağlanıp pin bağlantılarını aşağıdaki resme göre yapmalısınız.**
 ![2](https://github.com/spacemonochrome/demedukit_kod_arsiv/assets/52783312/9c0481d7-bad6-40c1-bbf9-2ae5dc9a75a0)
