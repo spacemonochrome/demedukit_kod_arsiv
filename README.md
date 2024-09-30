@@ -7,11 +7,15 @@ Demedukit eğitim kiti için yazılan kodları burada depoladım. ESP32 ve STM32
 
 ### İçerik Kodları
 
-1. **demedukit_sicaklik** uygulaması ntc sensörden sıcaklığı okur led ekrana yazar.
+1. **Demedukit_LedBlink_ESP32** ESP32 için adet Led yakıp söndürme uygulaması içermektedir.
 
-1. **demedukit_3Divmeolcer** uygulaması LIS2DW12 ivmeölçer uygulaması sensörden aldığı veriyi ekrana yazar.
+1. **Demedukit_LedBlink** STM32 için adet Led yakıp söndürme uygulaması içermektedir.
 
-1. **demedukit_stm32_esp32** uygulaması STM32'nin NTC sıcaklık sensöründen aldığı verileri UART üzeründen ESP32'ye gönderdiği, ESP32'nin de WiFi üzerinden kullanıcı internetine bağlanıp internete veri göndermesi üzerine yazılmış bir koddur.
+1. **Demedukit_NTC_SSD1306** uygulaması ntc sensörden sıcaklığı okur I2C ile haberleştiği SSD1306 led ekrana yazar.
+
+1. **Demedukit_LIS2DW12** uygulaması LIS2DW12 ivmeölçer sensöründen SPI ile aldığı veriyi SSD1306 ekranına yazdırır.
+
+1. **Demedukit_ESP32_UART** uygulaması STM32'nin NTC sıcaklık sensöründen aldığı verileri hem led ekrana yazdırdığı hem de UART üzeründen ESP32'ye gönderdiği, ESP32'nin de WiFi üzerinden kullanıcı internetine bağlanıp Thingspeak sitesine veri göndermesi üzerine yazılmış bir koddur.
 
 ![image-Photoroom](https://github.com/spacemonochrome/demedukit_kod_arsiv/assets/52783312/caf58be4-9b95-47e0-9cd9-09ac88776e47)
 
